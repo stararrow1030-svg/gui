@@ -1,0 +1,5 @@
+# Claude Code local settings
+.claude/
+
+# HTML review files (generated output, not source)
+golden_review_*.html
