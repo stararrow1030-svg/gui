@@ -284,6 +284,12 @@
 - **問題**: Brain CT 有 "Cerebral and cerebellar cortical atrophy with ventricular dilatation" 等顯著 finding，但 `acuteRx` 不含 `atrophy` → 不被視為 actionable → impression 只剩 "No interval change"
 - **修正**: 新增 `|atrophy|ventriculomegal|ventricular dilat|hydrocephal|encephalomalac` 到 `acuteRx`
 
+### 44. Spine MRI disc protrusion / thecal sac → acuteRx（impression-worthy）
+- **位置**: `GenerateImpression` `acuteRx` (~line 3657)
+- **問題**: C-spine MRI "Central disc protrusion at C2-3 and C3-4 with adjacent thecal sac indentation" 不出現在 impression — `acuteRx` 缺少脊椎相關 finding 模式（disc protrusion、thecal sac 都不匹配），而同 report 的 "Broad-based disc protrusion... with spinal stenosis" 因 `stenosis` 匹配而有進 impression
+- **修正**: 新增 `|protrusion|herniat|thecal|myelopath|myelomalac|cord\s+compress|encroach` 到 `acuteRx`
+- **涵蓋**: disc protrusion、disc herniation、thecal sac indentation/compression、myelopathy、myelomalacia、cord compression、neural foramina encroachment
+
 ## 關鍵函式對照
 
 | 函式名稱 | 用途 |
