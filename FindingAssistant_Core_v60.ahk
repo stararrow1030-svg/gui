@@ -407,6 +407,10 @@ CreateMainGUI() {
     gModeManual := false
     if IsSet(gCandidatesText)
         gCandidatesText := ""
+    ; [v60_fix44] Reset output state — prevent previous patient data leaking to new session
+    global gLastResult, gCapturedImpList
+    gLastResult := ""
+    gCapturedImpList := []
 
     ; ---- Initialise globals that may not be set by external caller ----
     if !IsSet(gAutoBodyPart)
@@ -3650,6 +3654,7 @@ GenerateImpression(bulletsText, clinicalText, mode, hasPrior := 0) {
             .  "|stenosis|occlus"
             .  "|infarct"
             .  "|atrophy|ventriculomegal|ventricular dilat|hydrocephal|encephalomalac"  ; [v60_fix] Brain CT significant findings → impression-worthy
+            .  "|protrusion|herniat|thecal|myelopath|myelomalac|cord\s+compress|encroach"  ; [v60_fix] Spine MRI significant findings → impression-worthy
 
     ; ── Recommendation tails to truncate ─────────────────────────────────
     tailRx := "i)\.\s*(suggest|recommend|advise|consider|please|clinical correlation|follow[- ]?up|further).*$"
