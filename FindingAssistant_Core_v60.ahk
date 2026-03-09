@@ -2582,11 +2582,12 @@ HeuristicRoutes_CSpineCT(line) {
         return "Others:"
 
     ; Spinal canal (check early — cord/thecal findings must not leak to vertebral bodies)
-    if RegExMatch(lc, "spinal\s+canal|canal\s+stenosis|\bcord\b|spinal\s+cord|myelopathy|myelomalacia|thecal\s+sac|cord\s+compression|cord\s+signal|cord\s+contusion|central\s+stenosis|\bcsf\b")
+    ; [v60_fix] OPLL moved here — ossification compresses spinal canal directly
+    if RegExMatch(lc, "spinal\s+canal|canal\s+stenosis|\bcord\b|spinal\s+cord|myelopathy|myelomalacia|thecal\s+sac|cord\s+compression|cord\s+signal|cord\s+contusion|central\s+stenosis|\bcsf\b|\bopll\b|ossification.*posterior\s+longitudinal|posterior\s+longitudinal.*ossif")
         return "Spinal canal:"
 
     ; Alignment
-    if RegExMatch(lc, "\balignment\b|scoliosis|kyphosis|lordosis|listhesis|spondylolisthesis|retrolisthesis|anterolisthesis|subluxation|curvature|\bopll\b|ossification.*posterior\s+longitudinal|posterior\s+longitudinal.*ossif")
+    if RegExMatch(lc, "\balignment\b|scoliosis|kyphosis|lordosis|listhesis|spondylolisthesis|retrolisthesis|anterolisthesis|subluxation|curvature")
         return "Alignment:"
 
     ; Intervertebral disc spaces
