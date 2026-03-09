@@ -1691,7 +1691,7 @@ ExtractLocation_ChestCT(line) {
     ; [v60_fix] Added perinephric|perirenal — \bnephr misses "perinephric" (no word boundary)
     if RegExMatch(lc, "\bkidney\b|\brenal\b|\bnephr|\bureter\b|hydronephrosis|nephrolithiasis|urolithiasis|perinephric|perirenal")
         return "kidney"
-    if RegExMatch(lc, "\blung\b|pulmonary\s+parenchyma|upper\s+lobe|lower\s+lobe|middle\s+lobe|\bbilateral\s+lob|\bcentrilobular\b")
+    if RegExMatch(lc, "\blungs?\b|pulmonary\s+parenchyma|upper\s+lobe|lower\s+lobe|middle\s+lobe|\bbilateral\s+lob|\bcentrilobular\b")
         return "lung"
     ; [v59_fix] Lung lesion abutting/touching pleura → still Lung parenchyma, not Pleura
     ; e.g. "calcified granuloma abutting the right upper pleura"
@@ -3088,10 +3088,14 @@ _IMP_IsNonFindingSentence(s) {
 }
 
 _IMP_ExtractFirstSize(s) {
+    ; [v60_fix] Handle dimension format like "1.7x2.6cm" or "1.7 x 2.6 cm"
+    if RegExMatch(s, "i)(\d+(?:\.\d+)?)\s*x\s*(\d+(?:\.\d+)?)\s*(cm|mm)\b", &mDim)
+        return mDim[1] "x" mDim[2] " " mDim[3]
     ; Handle size ranges like "0.3-0.5cm" or "0.3-0.5 cm"
     if RegExMatch(s, "i)\b(\d+(?:\.\d+)?\s*-\s*\d+(?:\.\d+)?)\s*(cm|mm)\b", &mRange)
         return RegExReplace(mRange[1], "\s", "") " " mRange[2]
-    if RegExMatch(s, "i)\b(\d+(?:\.\d+)?)\s*(cm|mm)\b", &m)
+    ; [v60_fix] Use (?<!\.) to prevent matching "6cm" from "2.6cm" (word boundary at decimal point)
+    if RegExMatch(s, "i)(?<!\.)(\d+(?:\.\d+)?)\s*(cm|mm)\b", &m)
         return m[1] " " m[2]
     return ""
 }
@@ -4963,7 +4967,7 @@ _SectionHitCount_ChestCT(txt) {
     ; [v60_fix] Removed bare generic terms (nodule|mass|lesion|cyst|tumour|cancer|carcinoma|neoplasm)
     ;   from lungHit — they match ANY organ finding, violating lesion+location principle.
     ;   Added \blung\b and bronchiectasis as lung-specific terms instead.
-    lungHit := RegExMatch(t, "\blung\b|pulmonary|ggn|ggo|ground[\s\-]*glass|consolidation|opacit|atelectasis|collapse|fibrosis|emphysema|centrilobular|infiltrat|tree[\s\-]*in[\s\-]*bud|bulla[e]?|bleb|cavit(y|ar)|pneumatocele|granuloma|bronchiectasis|upper lobe|middle lobe|lower lobe|lingula|\b(rul|rml|rll|lul|lll)\b|lung field")
+    lungHit := RegExMatch(t, "\blungs?\b|pulmonary|ggn|ggo|ground[\s\-]*glass|consolidation|opacit|atelectasis|collapse|fibrosis|emphysema|centrilobular|infiltrat|tree[\s\-]*in[\s\-]*bud|bulla[e]?|bleb|cavit(y|ar)|pneumatocele|granuloma|bronchiectasis|upper lobe|middle lobe|lower lobe|lingula|\b(rul|rml|rll|lul|lll)\b|lung field")
     lnHit   := RegExMatch(t, "mediastin|hilar|subcarinal|paratracheal|prevascular|aortopulmonary|lymph\s*node|\bln\b")
     pleHit  := RegExMatch(t, "pleura|pleural|effusion|pneumothorax|hydropneumothorax|hemothorax")
     hvHit   := RegExMatch(t, "heart|cardiac|aort|coronar|vessel|artery|vein|atheroscler|pericard|dissect|embol|\bpe\b|\bpte\b|thromb")
