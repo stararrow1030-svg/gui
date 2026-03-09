@@ -182,7 +182,8 @@ BuildExamRegistry() {
     ExamRegistry["Cervical Spine CT"] := MakeExamRegistryEntry(
         CFG["CSpineCTMapFile"],
         ["Alignment:", "Vertebral bodies:", "Posterior elements:",
-         "Intervertebral disc spaces:", "Prevertebral soft tissues:", "Spinal canal:"],
+         "Intervertebral disc spaces:", "Prevertebral soft tissues:", "Spinal canal:",
+         "Others:"],
         "CT", "Cervical Spine", ["neck", "cervical"],
         FilterBullet_CSpineCT, HeuristicRoutes_CSpineCT, "", "", true)
 
@@ -2575,6 +2576,11 @@ HeuristicRoutes_CSpineCT(line) {
     if (lc = "")
         return ""
 
+    ; [v60_fix] Others: incidental findings outside spine anatomy
+    ;   Sinusitis, tonsil calcification, thyroid, etc.
+    if RegExMatch(lc, "\bsinusitis\b|\bmaxillary\b|\btonsil|\bthyroid\b|\bparotid\b|\bsubmandibular\b|\borbit")
+        return "Others:"
+
     ; Spinal canal (check early — cord/thecal findings must not leak to vertebral bodies)
     if RegExMatch(lc, "spinal\s+canal|canal\s+stenosis|\bcord\b|spinal\s+cord|myelopathy|myelomalacia|thecal\s+sac|cord\s+compression|cord\s+signal|cord\s+contusion|central\s+stenosis|\bcsf\b")
         return "Spinal canal:"
@@ -2587,8 +2593,8 @@ HeuristicRoutes_CSpineCT(line) {
     if RegExMatch(lc, "\bdisc\b|\bdisk\b|osteophyte|uncovertebral|disc\s+space|disc\s+height|disc\s+desiccation|disc\s+degeneration|schmorl|annular|uncinate|spondylosis|disc\s+bulge|disc\s+protrusion|end.?plate\s+change")
         return "Intervertebral disc spaces:"
 
-    ; Posterior elements
-    if RegExMatch(lc, "posterior\s+element|spinous\s+process|\blamina\b|\bfacet\b|articular\s+process|\bpars\b|transverse\s+process|facet\s+joint|facet\s+arthrosis|facet\s+hypertrophy|posterior\s+arch")
+    ; Posterior elements (including nuchal ligament — connects spinous processes)
+    if RegExMatch(lc, "posterior\s+element|spinous\s+process|\blamina\b|\bfacet\b|articular\s+process|\bpars\b|transverse\s+process|facet\s+joint|facet\s+arthrosis|facet\s+hypertrophy|posterior\s+arch|nuchal\s+ligament")
         return "Posterior elements:"
 
     ; Prevertebral soft tissues
